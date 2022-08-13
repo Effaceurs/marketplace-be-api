@@ -10,7 +10,7 @@ spec:
   - port: 5000
     protocol: TCP
     targetPort: 5000
-    nodePort: 33333
+    nodePort: 32121
   selector:
     app: api
   type: NodePort
