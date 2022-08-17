@@ -23,7 +23,7 @@ metadata:
   name: marketplace-be-api
   namespace: backend
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: api
@@ -35,5 +35,12 @@ spec:
         app: api
     spec:
       containers:
-      - image: 192.168.110.135:5000/api:724
+      - image: 192.168.110.135:5000/api:755d55cd
         name: api
+        resources:
+          limits:
+            cpu: 25m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
