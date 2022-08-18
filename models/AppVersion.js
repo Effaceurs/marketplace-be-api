@@ -7,8 +7,8 @@ const appVersionSchema = new Schema({
     required: true
   },
   provider: {
-    type: {type: Schema.Types.ObjectId, refPath: 'model_type'},
-    model_type: {  type: String, enum: ['k8s', 'Yandex' ], required: true }
+    type: { type: Schema.Types.ObjectId, refPath: 'model_type' },
+    model_type: { type: String, enum: ['k8s', 'Yandex'], required: true }
   },
   version: {
     type: String,

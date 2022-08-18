@@ -5,9 +5,7 @@ const errorHandler = require('../utils/errorHandler');
 
 module.exports.deploy = async function (req, res) {
   console.log(req.body);
-  let user =
-    req.user.email.split('@')[0] +
-    req.user.email.split('@')[1].replace('.', '-');
+  let user = req.user.name
   let email = req.user.email;
   amqp.connect(keys.amq, function (error, connection) {
     if (error) {

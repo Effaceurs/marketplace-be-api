@@ -1,6 +1,7 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const User = require('../models/User')
+const Group = require('../models/Group')
 const keys = require('../config/keys')
 const errorHandler = require('../utils/errorHandler')
 
@@ -17,7 +18,7 @@ module.exports.login = async function (req, res) {
       const token = jwt.sign({
         email: candidate.email,
         userId: candidate._id
-      }, keys.jwt, {expiresIn: 60 * 60})
+      }, keys.jwt, { expiresIn: 60 * 60 })
       res.status(200).json({
         token: `Bearer ${token}`
       })
@@ -32,29 +33,39 @@ module.exports.login = async function (req, res) {
       message: 'User has not been found'
     })
   }
-};
+}
 
 module.exports.register = async function (req, res) {
-  console.log('body',req.body)
-  const candidate = await User.findOne({ email: req.body.email });
-  const salt = bcrypt.genSaltSync(10);
-  const password = req.body.password;
+  console.log('body', req.body)
+  const candidateName = await User.findOne({ name: req.body.name })
+  const candidateEmail = await User.findOne({ email: req.body.email })
+  const salt = bcrypt.genSaltSync(10)
+  const password = req.body.password
   // user exist - throw error
-  if (candidate) {
+  if (candidateName) {
     res.status(409).json({
-      message: 'this email is occupied',
-    });
+      message: 'this name is occupied'
+    })
+  } else if (candidateEmail) {
+    res.status(409).json({
+      message: 'this email is occupied'
+    })
   } else {
     const user = new User({
       email: req.body.email,
-      password: bcrypt.hashSync(password, salt),
-    });
-
+      name: req.body.name,
+      password: bcrypt.hashSync(password, salt)
+    })
+    const group = new Group({
+      name: req.body.name,
+      members: [req.body.name]
+    })
     try {
-      await user.save();
-      res.status(201).json(user);
+      await user.save()
+      await group.save()
+      res.status(201).json(user)
     } catch (e) {
       errorHandler(res, e)
     }
   }
-};
+}
