@@ -28,6 +28,9 @@ const applicationSchema = new Schema({
   },
   provider: {
     type: String
+  },
+  project: {
+    type: String
   }
 })
 

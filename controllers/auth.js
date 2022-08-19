@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
 const Group = require('../models/Group')
+const Project = require('../models/Project')
 const keys = require('../config/keys')
 const errorHandler = require('../utils/errorHandler')
 
@@ -60,9 +61,15 @@ module.exports.register = async function (req, res) {
       name: req.body.name,
       members: [req.body.name]
     })
+    const project = new Project({
+      name: 'default',
+      owner: req.body.name,
+      members: [req.body.name]
+    })
     try {
       await user.save()
       await group.save()
+      await project.save()
       res.status(201).json(user)
     } catch (e) {
       errorHandler(res, e)

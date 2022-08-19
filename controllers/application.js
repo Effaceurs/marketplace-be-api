@@ -1,17 +1,18 @@
 const Application = require('../models/Application')
-const Group = require('../models/Group')
+const Project = require('../models/Project')
+const User = require('../models/User')
 const errorHandler = require('../utils/errorHandler')
 const amqp = require('amqplib/callback_api')
 const keys = require('../config/keys')
 
 module.exports.getAll = async function (req, res) {
   try {
-    const groups = await Group.find()
-    const memberOfGroups = groups.filter(value => value.members.includes(req.user.name))
-    const users = new Set((memberOfGroups.flatMap(value => value.members)))
+    const projects = await Project.find()
+    const user = await User.findOne({ _id: req.query.id })
+    const userProjectIds = projects.filter(value => value.members.includes(user.name)).map(value => value._id)
     const applications = []
-    for (const user of users) {
-      const apps = await Application.find({ user })
+    for (const id of userProjectIds) {
+      const apps = await Application.find({ project: id })
       applications.push(...apps)
     }
     return res.status(200).json(applications)
@@ -34,7 +35,8 @@ module.exports.create = async function (req, res) {
       replicas: req.body.replicas,
       url: 'indentifying',
       status: 'pending',
-      provider: req.body.provider
+      provider: req.body.provider,
+      project: req.body.project
     }).save()
     console.log(order)
     res.status(200).json(order)
