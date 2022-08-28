@@ -13,6 +13,9 @@ const projectSchema = new Schema({
   members: {
     type: Array,
     required: true
+  },
+  groups: {
+    type: Array
   }
 })
 

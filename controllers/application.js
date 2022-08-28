@@ -1,19 +1,37 @@
 const Application = require('../models/Application')
 const Project = require('../models/Project')
 const User = require('../models/User')
+const Group = require('../models/Group')
 const errorHandler = require('../utils/errorHandler')
 const amqp = require('amqplib/callback_api')
 const keys = require('../config/keys')
 
 module.exports.getAll = async function (req, res) {
   try {
-    const projects = await Project.find()
-    const user = await User.findOne({ _id: req.query.id })
-    const userProjectIds = projects.filter(value => value.members.includes(user.name)).map(value => value._id)
     const applications = []
+    const userGroupsIds = []
+    const projects = await Project.find()
+    const groups = await Group.find()
+    const user = await User.findOne({ _id: req.query.id })
+    const userGroups = groups.filter(value => value.members.includes(user.name)).map(value => value.name)
+    for (const group of userGroups) {
+      const projectId = projects.filter(value => value.groups.includes(group)).map(value => value._id)
+      if (!userGroupsIds.includes(projectId)) {
+        userGroupsIds.push(projectId)
+      }
+    }
+    const userProjectIds = projects.filter(value => value.members.includes(user.name)).map(value => value._id)
     for (const id of userProjectIds) {
       const apps = await Application.find({ project: id })
-      applications.push(...apps)
+      if (applications.filter(value => value.project === id).length === 0) {
+        applications.push(...apps)
+      }
+    }
+    for (const id of userGroupsIds) {
+      const apps = await Application.find({ project: id })
+      if (applications.filter(value => value.project === id).length === 0) {
+        applications.push(...apps)
+      }
     }
     return res.status(200).json(applications)
   } catch (error) {
