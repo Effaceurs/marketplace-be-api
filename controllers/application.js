@@ -16,8 +16,11 @@ module.exports.getAll = async function (req, res) {
     const userGroups = groups.filter(value => value.members.includes(user.name)).map(value => value.name)
     for (const group of userGroups) {
       const projectId = projects.filter(value => value.groups.includes(group)).map(value => value._id)
+      if (projectId.length === 0) {
+        continue
+      }
       if (!userGroupsIds.includes(projectId)) {
-        userGroupsIds.push(projectId)
+        userGroupsIds.push(...projectId)
       }
     }
     const userProjectIds = projects.filter(value => value.members.includes(user.name)).map(value => value._id)
@@ -27,10 +30,15 @@ module.exports.getAll = async function (req, res) {
         applications.push(...apps)
       }
     }
+    console.log(applications.map(value => value._id))
     for (const id of userGroupsIds) {
       const apps = await Application.find({ project: id })
-      if (applications.filter(value => value.project === id).length === 0) {
-        applications.push(...apps)
+      for (const app of apps) {
+        if (applications.filter(value => value.project === id).length === 0) {
+          if ((applications.filter(value => value._id.toString() === app._id.toString()).length === 0)) {
+            applications.push(app)
+          }
+        }
       }
     }
     return res.status(200).json(applications)
