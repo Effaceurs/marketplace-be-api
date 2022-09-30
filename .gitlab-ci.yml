@@ -4,6 +4,7 @@ stages:
   - release
   - k8s_tests
   - push
+  - sonarqube-check
 
 code_quality:
   stage: unit_test
