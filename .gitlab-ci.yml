@@ -75,6 +75,7 @@ push:
     - git push origin HEAD:main -o ci.skip
 
 sonarqube-check:
+  stage: sonarqube-check
   image: 
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
