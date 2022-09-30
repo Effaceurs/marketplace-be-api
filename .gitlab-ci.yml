@@ -4,7 +4,6 @@ stages:
   - release
   - k8s_tests
   - push
-  - sonarqube-check
 
 code_quality:
   stage: unit_test
@@ -75,7 +74,7 @@ push:
     - git push origin HEAD:main -o ci.skip
 
 sonarqube-check:
-  stage: sonarqube-check
+  stage: unit_test
   image: 
     name: sonarsource/sonar-scanner-cli:latest
     entrypoint: [""]
